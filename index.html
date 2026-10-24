@@ -1,0 +1,891 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="color-scheme" content="light dark" />
+<link rel="icon" href="data:," />
+<title>Resume Builder — Students ke liye Free Tools</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --bg:#f6f4ee;
+    --bg-soft:#efe9dd;
+    --surface:#fffdf8;
+    --surface-2:#f3eee2;
+    --ink:#1c1a15;
+    --ink-soft:#57503f;
+    --line:#ddd3bf;
+    --accent:#0e7a5f;
+    --accent-ink:#0a5c47;
+    --accent-soft:#dff2ea;
+    --gold:#c8912a;
+    --gold-soft:#f7ecd2;
+    --danger:#b3402a;
+    --paper:#ffffff;
+    --paper-ink:#212121;
+    --shadow:0 10px 30px rgba(40,32,10,.10);
+    --r:14px;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#14130f;
+      --bg-soft:#1c1a15;
+      --surface:#201d17;
+      --surface-2:#26221a;
+      --ink:#f2ecdd;
+      --ink-soft:#b7ae97;
+      --line:#3a342a;
+      --accent:#3ec49b;
+      --accent-ink:#7fe0c2;
+      --accent-soft:#17382e;
+      --gold:#e0aa3e;
+      --gold-soft:#3a2f14;
+      --danger:#e0765c;
+      --shadow:0 10px 30px rgba(0,0,0,.45);
+    }
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;background:var(--bg);color:var(--ink);
+    font-family:"Inter",system-ui,sans-serif;font-size:16px;line-height:1.55;
+  }
+  h1,h2,h3{font-family:"Fraunces",Georgia,serif;line-height:1.15;margin:0}
+  button{font-family:inherit;cursor:pointer}
+  input,textarea,select{font-family:inherit;font-size:15px;color:var(--ink)}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 18px}
+  .mono{font-family:"JetBrains Mono",monospace}
+
+  /* ---------- header band ---------- */
+  .band{
+    background:var(--ink);color:#f5efe0;
+    padding:34px 0 30px;border-bottom:5px solid var(--gold);
+  }
+  @media (prefers-color-scheme: dark){ .band{background:#0c0b08} }
+  .band .wrap{display:flex;flex-wrap:wrap;gap:22px;align-items:flex-end;justify-content:space-between}
+  .band h1{font-size:clamp(30px,5vw,46px);font-weight:800;letter-spacing:-.01em}
+  .band h1 .gold{color:var(--gold)}
+  .band p{margin:8px 0 0;max-width:560px;color:#cfc6ae;font-size:16px}
+  .band .facts{display:flex;gap:10px;flex-wrap:wrap}
+  .fact{
+    border:1px solid #4a4433;border-radius:999px;padding:7px 14px;font-size:13px;font-weight:600;color:#e9e2cd;
+    display:flex;align-items:center;gap:7px;background:rgba(255,255,255,.04)
+  }
+  .fact b{color:var(--gold);font-family:"JetBrains Mono",monospace}
+
+  /* ---------- tabs ---------- */
+  .tabs{
+    position:sticky;top:0;z-index:40;background:var(--bg);
+    border-bottom:1px solid var(--line);
+  }
+  .tabs .wrap{display:flex;gap:6px;overflow-x:auto;padding-top:10px;padding-bottom:10px;scrollbar-width:none}
+  .tabs .wrap::-webkit-scrollbar{display:none}
+  .tab{
+    border:1px solid var(--line);background:var(--surface);color:var(--ink-soft);
+    border-radius:999px;padding:9px 16px;font-weight:600;font-size:14px;white-space:nowrap;
+  }
+  .tab[aria-selected="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+  @media (prefers-color-scheme: dark){ .tab[aria-selected="true"]{color:#0b1512} }
+
+  main{padding:28px 0 60px}
+  .panel{display:none}
+  .panel.active{display:block}
+  .section-head{margin:6px 0 20px}
+  .section-head h2{font-size:clamp(24px,3.4vw,32px);font-weight:800}
+  .section-head p{color:var(--ink-soft);margin:6px 0 0;max-width:720px}
+
+  /* ---------- builder layout ---------- */
+  .builder{display:grid;grid-template-columns:400px 1fr;gap:26px;align-items:start}
+  @media (max-width:920px){ .builder{grid-template-columns:1fr} }
+  .form-card{
+    background:var(--surface);border:1px solid var(--line);border-radius:var(--r);
+    padding:20px;box-shadow:var(--shadow);
+  }
+  .form-card h3{font-size:19px;margin-bottom:4px}
+  .form-card .hint{color:var(--ink-soft);font-size:13px;margin:0 0 14px}
+  .field{margin-bottom:13px}
+  .field label{display:block;font-size:13px;font-weight:600;margin-bottom:5px}
+  .field input,.field textarea,.field select{
+    width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:9px;background:var(--bg);outline:none;
+  }
+  .field input:focus,.field textarea:focus,.field select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+  .field textarea{resize:vertical;min-height:64px}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  @media (max-width:480px){ .grid2{grid-template-columns:1fr} }
+  .divider{border:none;border-top:1px dashed var(--line);margin:18px 0}
+  .entries{display:flex;flex-direction:column;gap:10px}
+  .entry{
+    background:var(--surface-2);border:1px solid var(--line);border-radius:10px;padding:12px;
+  }
+  .entry .row{display:flex;gap:8px}
+  .entry input{flex:1;min-width:0;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg)}
+  .entry .sub{margin-top:8px}
+  .entry .sub input{width:100%}
+  .btn{
+    border:none;border-radius:10px;padding:11px 18px;font-weight:700;font-size:14px;
+    background:var(--accent);color:#fff;display:inline-flex;align-items:center;gap:8px;
+  }
+  @media (prefers-color-scheme: dark){ .btn{color:#0b1512} }
+  .btn.gold{background:var(--gold);color:#221a05}
+  .btn.ghost{background:transparent;border:1.5px solid var(--line);color:var(--ink)}
+  .btn.small{padding:7px 12px;font-size:13px;border-radius:8px}
+  .btn:active{transform:translateY(1px)}
+  .btn-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+  .icon-btn{
+    border:1px solid var(--line);background:var(--bg);color:var(--danger);
+    width:34px;height:34px;border-radius:8px;font-size:16px;line-height:1;flex:none;
+  }
+  .tpl-row{display:flex;gap:8px;flex-wrap:wrap}
+  .tpl{
+    flex:1;min-width:100px;border:1.5px solid var(--line);background:var(--bg);border-radius:10px;
+    padding:10px;font-weight:700;font-size:13px;color:var(--ink-soft);text-align:center;
+  }
+  .tpl[aria-pressed="true"]{border-color:var(--accent);color:var(--accent-ink);background:var(--accent-soft)}
+  .swatches{display:flex;gap:9px}
+  .swatch{width:30px;height:30px;border-radius:50%;border:2px solid transparent;padding:0}
+  .swatch[aria-pressed="true"]{border-color:var(--ink);box-shadow:0 0 0 2px var(--bg),0 0 0 4px var(--ink)}
+
+  /* ---------- resume preview ---------- */
+  .preview-col{position:sticky;top:64px}
+  @media (max-width:920px){ .preview-col{position:static} }
+  .preview-tools{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;align-items:center}
+  .score-chip{
+    margin-left:auto;background:var(--gold-soft);border:1px solid var(--gold);color:var(--ink);
+    border-radius:999px;padding:7px 14px;font-size:13px;font-weight:700;
+  }
+  .score-chip b{font-family:"JetBrains Mono",monospace}
+  .resume{
+    background:var(--paper);color:var(--paper-ink);border-radius:6px;
+    box-shadow:0 18px 44px rgba(30,25,10,.22);
+    padding:40px 44px;min-height:640px;
+    font-size:13.5px;line-height:1.5;
+    --ra:#0e7a5f;
+  }
+  @media (max-width:560px){ .resume{padding:26px 20px} }
+  .resume .r-name{font-family:"Fraunces",Georgia,serif;font-weight:800;line-height:1.05}
+  .resume .r-title{font-weight:600;letter-spacing:.02em}
+  .resume .r-contact{font-size:12px}
+  .resume h4{
+    font-size:12px;letter-spacing:.14em;text-transform:uppercase;margin:20px 0 8px;font-weight:800;
+  }
+  .resume p{margin:0 0 6px}
+  .resume ul{margin:0;padding-left:17px}
+  .resume li{margin-bottom:3px}
+  .resume .r-item-head{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+  .resume .r-item-head b{font-size:13.5px}
+  .resume .r-when{font-size:12px;color:#666;white-space:nowrap}
+  .resume .r-sub{color:#555;font-size:12.5px}
+  .skill-chips{display:flex;flex-wrap:wrap;gap:6px}
+  .skill-chips span{border:1px solid #ccc;border-radius:999px;padding:2px 10px;font-size:12px}
+  /* template: modern */
+  .resume.t-modern .r-head{border-bottom:3px solid var(--ra);padding-bottom:14px}
+  .resume.t-modern .r-name{font-size:30px;color:var(--ra)}
+  .resume.t-modern .r-title{color:#444;font-size:14px;margin-top:2px}
+  .resume.t-modern h4{color:var(--ra);border-bottom:1px solid #e3e3e3;padding-bottom:4px}
+  /* template: classic */
+  .resume.t-classic{font-family:Georgia,"Times New Roman",serif}
+  .resume.t-classic .r-head{text-align:center;border-bottom:1px solid #999;padding-bottom:12px}
+  .resume.t-classic .r-name{font-size:28px}
+  .resume.t-classic .r-title{font-style:italic;color:#444}
+  .resume.t-classic h4{text-align:center;color:#333}
+  /* template: bold sidebar */
+  .resume.t-bold{display:grid;grid-template-columns:180px 1fr;gap:0;padding:0;overflow:hidden}
+  .resume.t-bold .r-side{background:var(--ra);color:#fff;padding:30px 20px;min-height:640px}
+  .resume.t-bold .r-side h4{color:#fff;border-bottom:1px solid rgba(255,255,255,.4);padding-bottom:4px}
+  .resume.t-bold .r-side .skill-chips span{border-color:rgba(255,255,255,.55);color:#fff}
+  .resume.t-bold .r-side p,.resume.t-bold .r-side li{color:#eef}
+  .resume.t-bold .r-main{padding:30px 28px}
+  .resume.t-bold .r-name{font-size:26px;color:var(--ra)}
+  .resume.t-bold .r-main h4{color:var(--ra)}
+  @media (max-width:560px){
+    .resume.t-bold{grid-template-columns:1fr}
+    .resume.t-bold .r-side{min-height:0}
+  }
+  .ats-list{list-style:none;margin:14px 0 0;padding:0;display:flex;flex-direction:column;gap:8px}
+  .ats-list li{
+    display:flex;gap:10px;align-items:flex-start;background:var(--surface);
+    border:1px solid var(--line);border-radius:10px;padding:10px 13px;font-size:14px;
+  }
+  .ats-list .mark{font-weight:800;flex:none;width:20px;text-align:center}
+  .ats-list .ok .mark{color:var(--accent)}
+  .ats-list .bad .mark{color:var(--danger)}
+
+  /* ---------- cards / tools ---------- */
+  .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(255px,1fr));gap:16px}
+  .card{
+    background:var(--surface);border:1px solid var(--line);border-radius:var(--r);
+    padding:20px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:9px;
+  }
+  .card h3{font-size:19px}
+  .card p{color:var(--ink-soft);font-size:14px;margin:0;flex:1}
+  .card .tag{
+    align-self:flex-start;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;
+    background:var(--accent-soft);color:var(--accent-ink);border-radius:6px;padding:3px 9px;
+  }
+  .card .tag.gold{background:var(--gold-soft);color:var(--ink)}
+  .output-box{
+    background:var(--surface-2);border:1px solid var(--line);border-radius:10px;
+    padding:14px;font-size:14px;white-space:pre-wrap;word-break:break-word;display:none;
+  }
+  .output-box.show{display:block}
+  .output-box .ob-title{font-weight:800;font-family:"Fraunces",serif;font-size:16px;margin-bottom:6px}
+  pre.code{
+    background:#191712;color:#f0e9d6;border-radius:10px;padding:14px;overflow-x:auto;
+    font-family:"JetBrains Mono",monospace;font-size:12.5px;line-height:1.6;margin:0;white-space:pre;
+  }
+  @media (prefers-color-scheme: dark){ pre.code{background:#0c0b08} }
+  .lesson{margin-bottom:26px}
+  .lesson h3{font-size:21px;margin-bottom:4px}
+  .lesson .urdu{color:var(--ink-soft);margin:0 0 10px;font-size:15px}
+  .lesson-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media (max-width:760px){ .lesson-grid{grid-template-columns:1fr} }
+  .try-box{
+    background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px;
+  }
+  .try-box .tb-head{font-size:12px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:8px}
+  .try-frame{width:100%;height:150px;border:1px solid var(--line);border-radius:8px;background:#fff}
+  .quiz-q{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:20px;box-shadow:var(--shadow)}
+  .quiz-q h3{font-size:19px;margin-bottom:12px}
+  .quiz-opts{display:grid;gap:9px}
+  .quiz-opt{
+    text-align:left;border:1.5px solid var(--line);background:var(--bg);border-radius:10px;
+    padding:11px 14px;font-size:14.5px;font-weight:500;color:var(--ink);
+  }
+  .quiz-opt.correct{border-color:var(--accent);background:var(--accent-soft)}
+  .quiz-opt.wrong{border-color:var(--danger);background:#fbe9e2}
+  @media (prefers-color-scheme: dark){ .quiz-opt.wrong{background:#3a1f16} }
+  .quiz-opt:disabled{cursor:default;opacity:.92}
+  .quiz-explain{margin-top:12px;font-size:14px;color:var(--ink-soft);display:none}
+  .quiz-explain.show{display:block}
+  .note{
+    background:var(--gold-soft);border:1px solid var(--gold);border-radius:var(--r);
+    padding:16px 18px;font-size:14.5px;margin-top:22px;
+  }
+  .note b{font-family:"Fraunces",serif}
+  footer{border-top:1px solid var(--line);padding:22px 0 34px;color:var(--ink-soft);font-size:13.5px}
+  .toast{
+    position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(80px);
+    background:var(--ink);color:var(--bg);padding:11px 20px;border-radius:999px;font-weight:600;font-size:14px;
+    transition:transform .3s ease;z-index:99;box-shadow:var(--shadow);max-width:90vw;text-align:center;
+  }
+  .toast.show{transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+
+<header class="band">
+  <div class="wrap">
+    <div>
+      <h1>Resume <span class="gold">Builder</span></h1>
+      <p>Students ke liye free toolkit — khoobsurat resume banao, coding Roman Urdu me seekho, aur kuch bilkul naye unique tools bhi try karo. Koi sign-up nahi, sab kuch isi page par.</p>
+    </div>
+    <div class="facts">
+      <span class="fact"><b>3</b> resume templates</span>
+      <span class="fact"><b>8</b> coding lessons</span>
+      <span class="fact"><b>5</b> unique tools</span>
+      <span class="fact"><b>100%</b> free</span>
+    </div>
+  </div>
+</header>
+
+<nav class="tabs" aria-label="Sections">
+  <div class="wrap" role="tablist">
+    <button class="tab" role="tab" aria-selected="true" data-tab="builder">Resume Builder</button>
+    <button class="tab" role="tab" aria-selected="false" data-tab="learn">Coding Seekho (Roman Urdu)</button>
+    <button class="tab" role="tab" aria-selected="false" data-tab="tools">Unique Tools</button>
+    <button class="tab" role="tab" aria-selected="false" data-tab="github">GitHub Viral Guide</button>
+  </div>
+</nav>
+
+<main class="wrap">
+
+  <!-- ================= RESUME BUILDER ================= -->
+  <section class="panel active" id="panel-builder" role="tabpanel">
+    <div class="section-head">
+      <h2>Apna resume banao — 2 minute me</h2>
+      <p>Left side form bharo, right side resume live banta jayega. Neeche se PDF ya photo (PNG) download kar lo, aur WhatsApp par bhejne wala ready message bhi mil jayega.</p>
+    </div>
+
+    <div class="builder">
+      <form class="form-card" id="resumeForm" autocomplete="off">
+        <h3>Tumhari details</h3>
+        <p class="hint">Example pehle se bhara hai — apni details likho, sab khud update hoga.</p>
+
+        <div class="field"><label for="f-name">Poora naam</label><input id="f-name" value="Ahmed Raza" /></div>
+        <div class="field"><label for="f-title">Job title / goal (masalan: E-commerce Assistant)</label><input id="f-title" value="E-commerce Assistant" /></div>
+        <div class="grid2">
+          <div class="field"><label for="f-phone">Phone</label><input id="f-phone" value="0300-1234567" /></div>
+          <div class="field"><label for="f-city">Sheher (City)</label><input id="f-city" value="Karachi, Pakistan" /></div>
+        </div>
+        <div class="field"><label for="f-email">Email</label><input id="f-email" type="email" value="ahmed.raza@example.com" /></div>
+        <div class="field"><label for="f-summary">Short intro (2–3 lines)</label>
+          <textarea id="f-summary">Motivated student looking for an e-commerce role. Comfortable with online orders, WhatsApp customer replies and product listings. Quick learner who speaks several languages.</textarea>
+        </div>
+        <div class="field"><label for="f-skills">Skills (comma se alag karo)</label>
+          <input id="f-skills" value="Online order processing, WhatsApp customer support, Product listing, MS Office, Internet research, Data entry" />
+        </div>
+        <div class="field"><label for="f-langs">Zubaanain / Languages (comma se alag karo)</label>
+          <input id="f-langs" value="Urdu, English, Sindhi" />
+        </div>
+
+        <hr class="divider" />
+        <h3>Taleem (Education)</h3>
+        <p class="hint">Degree, school aur saal likho. Aur add kar sakte ho.</p>
+        <div class="entries" id="eduEntries"></div>
+        <div class="btn-row"><button type="button" class="btn ghost small" id="addEdu">+ Education add karo</button></div>
+
+        <hr class="divider" />
+        <h3>Experience (agar hai)</h3>
+        <p class="hint">Job, internship ya ghar ka business — jo bhi real hai wahi likho.</p>
+        <div class="entries" id="expEntries"></div>
+        <div class="btn-row"><button type="button" class="btn ghost small" id="addExp">+ Experience add karo</button></div>
+
+        <hr class="divider" />
+        <h3>Design</h3>
+        <p class="hint">Template aur rang chuno.</p>
+        <div class="tpl-row" style="margin-bottom:12px">
+          <button type="button" class="tpl" data-tpl="t-modern" aria-pressed="true">Modern</button>
+          <button type="button" class="tpl" data-tpl="t-classic" aria-pressed="false">Classic</button>
+          <button type="button" class="tpl" data-tpl="t-bold" aria-pressed="false">Bold Sidebar</button>
+        </div>
+        <div class="swatches" id="swatches">
+          <button type="button" class="swatch" data-color="#0e7a5f" style="background:#0e7a5f" aria-pressed="true" aria-label="Green"></button>
+          <button type="button" class="swatch" data-color="#1d4ed8" style="background:#1d4ed8" aria-pressed="false" aria-label="Blue"></button>
+          <button type="button" class="swatch" data-color="#7c2d12" style="background:#7c2d12" aria-pressed="false" aria-label="Maroon"></button>
+          <button type="button" class="swatch" data-color="#b45309" style="background:#b45309" aria-pressed="false" aria-label="Amber"></button>
+          <button type="button" class="swatch" data-color="#111827" style="background:#111827" aria-pressed="false" aria-label="Black"></button>
+        </div>
+      </form>
+
+      <div class="preview-col">
+        <div class="preview-tools">
+          <button class="btn" id="dlPdf" type="button">PDF Download</button>
+          <button class="btn gold" id="dlPng" type="button">Photo (PNG) Download</button>
+          <span class="score-chip">ATS Score: <b id="atsScore">–</b></span>
+        </div>
+
+        <div class="resume t-modern" id="resumeSheet"></div>
+
+        <ul class="ats-list" id="atsList"></ul>
+
+        <div class="card" style="margin-top:18px">
+          <span class="tag gold">Bonus</span>
+          <h3>Cover Letter — 1 click</h3>
+          <p>Upar wali details se ready-made cover letter ban jayega. Company ka naam likho aur generate karo.</p>
+          <div class="field" style="margin:0">
+            <label for="cl-company">Company / Shop ka naam</label>
+            <input id="cl-company" placeholder="masalan: Sukkur Online Store" />
+          </div>
+          <div class="btn-row">
+            <button class="btn small" id="genCover" type="button">Cover Letter banao</button>
+            <button class="btn ghost small" id="copyCover" type="button" style="display:none">Copy karo</button>
+          </div>
+          <div class="output-box" id="coverOut"></div>
+        </div>
+
+        <div class="card" style="margin-top:16px">
+          <span class="tag gold">Bonus</span>
+          <h3>WhatsApp Job Message</h3>
+          <p>Employers ko WhatsApp par bhejne wala professional message — resume ke saath bhej do.</p>
+          <div class="btn-row">
+            <button class="btn small" id="genWa" type="button">Message banao</button>
+            <button class="btn ghost small" id="copyWa" type="button" style="display:none">Copy karo</button>
+          </div>
+          <div class="output-box" id="waOut"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= LEARN ================= -->
+  <section class="panel" id="panel-learn" role="tabpanel">
+    <div class="section-head">
+      <h2>Coding Seekho — Roman Urdu me</h2>
+      <p>Har lesson me simple Roman Urdu samjhaya gaya hai, code ki example hai, aur "Try karo" box me khud code badal kar result dekh sakte ho. Yehi lessons GitHub repo me daal kar tum apni pehchan bana sakte ho.</p>
+    </div>
+    <div id="lessons"></div>
+
+    <div class="section-head" style="margin-top:36px">
+      <h2>Quiz — apna test lo</h2>
+      <p id="quizProgress" class="mono" style="color:var(--ink-soft)"></p>
+    </div>
+    <div class="quiz-q" id="quizBox"></div>
+
+    <div class="note">
+      <b>GitHub par daalne ka tareeqa:</b> Ek repo banao jiska naam ho <span class="mono">coding-seekho-roman-urdu</span> — har lesson ek file (masalan <span class="mono">01-html-basics.md</span>) bana kar daalo. README me likho: "Coding seekhna ab asaan — sab kuch Roman Urdu me!" Phir usi repo ki Instagram reel banao: "Day 1: Maine HTML seekha". Seekhte hue sikhana — yehi cheez log sab se zyada follow karte hain.
+    </div>
+  </section>
+
+  <!-- ================= TOOLS ================= -->
+  <section class="panel" id="panel-tools" role="tabpanel">
+    <div class="section-head">
+      <h2>Unique Tools — kuch alag, kuch naya</h2>
+      <p>Ye wo chhote tools hain jo aam resume sites par nahi milte. Sab isi page par chalte hain, kuch install nahi karna.</p>
+    </div>
+
+    <div class="cards">
+      <div class="card">
+        <span class="tag">Naya</span>
+        <h3>Skill Se Paise Calculator</h3>
+        <p>Ek skill chuno, batao hafte me kitne ghante de sakte ho — andaza mil jayega ke freelancing se mahina kitna kama sakte ho. (Andaza hai, guarantee nahi.)</p>
+        <div class="field" style="margin:0">
+          <label for="calc-skill">Skill</label>
+          <select id="calc-skill">
+            <option value="250">Data Entry (Rs 250/hour)</option>
+            <option value="400">Social Media Handling (Rs 400/hour)</option>
+            <option value="600" selected>Video Editing / Reels (Rs 600/hour)</option>
+            <option value="800">Graphic Design (Rs 800/hour)</option>
+            <option value="1000">Web Development (Rs 1,000/hour)</option>
+            <option value="500">Online Teaching (Rs 500/hour)</option>
+          </select>
+        </div>
+        <div class="field" style="margin:0">
+          <label for="calc-hours">Hafte me ghante: <b id="calc-hours-label">10</b></label>
+          <input type="range" id="calc-hours" min="2" max="40" value="10" />
+        </div>
+        <div class="output-box show" id="calcOut"></div>
+      </div>
+
+      <div class="card">
+        <span class="tag">Naya</span>
+        <h3>Username Generator</h3>
+        <p>Instagram, YouTube ya GitHub ke liye catchy username ideas — apna naam ya pasandeeda lafz likho.</p>
+        <div class="field" style="margin:0">
+          <label for="un-word">Naam / lafz</label>
+          <input id="un-word" placeholder="masalan: tanveen" />
+        </div>
+        <div class="btn-row"><button class="btn small" id="genUser" type="button">Ideas banao</button></div>
+        <div class="output-box" id="userOut"></div>
+      </div>
+
+      <div class="card">
+        <span class="tag">Naya</span>
+        <h3>Roman Urdu Typing Helper</h3>
+        <p>Urdu script me likha text Roman Urdu me badal kar copy kar lo — captions aur comments ke liye perfect.</p>
+        <div class="field" style="margin:0">
+          <label for="tu-input">Urdu text yahan likho / paste karo</label>
+          <textarea id="tu-input" placeholder="مثلاً: میرا نام تنوین ہے"></textarea>
+        </div>
+        <div class="btn-row">
+          <button class="btn small" id="convUrdu" type="button">Roman Urdu me badlo</button>
+          <button class="btn ghost small" id="copyUrdu" type="button" style="display:none">Copy karo</button>
+        </div>
+        <div class="output-box" id="urduOut"></div>
+      </div>
+
+      <div class="card">
+        <span class="tag gold">Cheat Sheet</span>
+        <h3>HTML Cheat Sheet</h3>
+        <p>Sab se zyada use hone wale HTML tags — reel ya post ke liye copy kar lo.</p>
+        <pre class="code">&lt;h1&gt;Sab se bari heading&lt;/h1&gt;
+&lt;p&gt;Paragraph likhne ke liye&lt;/p&gt;
+&lt;a href="link"&gt;Click wala text&lt;/a&gt;
+&lt;img src="photo.jpg"&gt; — photo lagana
+&lt;button&gt;Button&lt;/button&gt;
+&lt;ul&gt;&lt;li&gt;List ki cheez&lt;/li&gt;&lt;/ul&gt;</pre>
+        <div class="btn-row"><button class="btn ghost small copy-pre" type="button">Copy karo</button></div>
+      </div>
+
+      <div class="card">
+        <span class="tag gold">Cheat Sheet</span>
+        <h3>CSS Cheat Sheet</h3>
+        <p>Rang, size aur design badalne ke ready codes.</p>
+        <pre class="code">color: red;            /* text ka rang */
+background: black;     /* peeche ka rang */
+font-size: 20px;       /* text ka size */
+padding: 10px;         /* andar ki jagah */
+margin: 10px;          /* bahar ki jagah */
+border-radius: 12px;   /* gol konay */
+text-align: center;    /* text beech me */</pre>
+        <div class="btn-row"><button class="btn ghost small copy-pre" type="button">Copy karo</button></div>
+      </div>
+
+      <div class="card">
+        <span class="tag gold">Idea</span>
+        <h3>30-Day Seekhne ka Plan</h3>
+        <p>Roz sirf 1 ghanta — mahine ke aakhir me tumhare paas GitHub par dikhane layak kaam hoga.</p>
+        <div class="output-box show"><b>Week 1:</b> HTML basics — headings, links, photos, lists.
+<b>Week 2:</b> CSS — rang, design, mobile layout.
+<b>Week 3:</b> JavaScript — buttons, click par kaam, chhoti game.
+<b>Week 4:</b> Apna project — resume page ya shop page bana kar GitHub + reel.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= GITHUB GUIDE ================= -->
+  <section class="panel" id="panel-github" role="tabpanel">
+    <div class="section-head">
+      <h2>GitHub par stars kaise aate hain?</h2>
+      <p>Sach ye hai: viral hone ki guarantee koi nahi de sakta. Lekin jin repos ko stars milte hain, un sab me ye cheezein common hoti hain — logon ka asli masla hal karna, pehli nazar me samajh aana, aur ek zabardast demo.</p>
+    </div>
+    <div class="cards">
+      <div class="card"><span class="tag">Step 1</span><h3>Asli masla hal karo</h3><p>REA is liye famous hua ke usne developers ka mushkil kaam asaan kiya. Tumhara resume builder students ka masla hal karta hai, aur Roman Urdu tutorials un students ka jo English me atakte hain. Masla jitna asli, log utne zyada.</p></div>
+      <div class="card"><span class="tag">Step 2</span><h3>README = tumhari dukaan</h3><p>Repo kholte hi pehli screen README hoti hai: pehli line me batao ye kya karta hai, ek screenshot ya GIF lagao, aur "kaise use karein" 3 steps me likho. Bina README wala repo log foran band kar dete hain.</p></div>
+      <div class="card"><span class="tag">Step 3</span><h3>Demo reel banao</h3><p>30 second ki reel: "Pehle mera resume ✗ — ab dekho ✓". Screen recording, tez music, aur aakhir me GitHub link comment me pin karo. Ek reel, aur wohi content TikTok + YouTube Shorts par bhi.</p></div>
+      <div class="card"><span class="tag">Step 4</span><h3>Roz thora, roz share</h3><p>"Day 1, Day 2…" series log follow karte hain. Seekhte hue banana sab se tez trust banata hai — log tumhare safar ke saathi ban jate hain, sirf ek repo ke visitor nahi.</p></div>
+      <div class="card"><span class="tag">Step 5</span><h3>Logon ki madad maango — sahi tareeqe se</h3><p>Friends aur class fellows ko bolo: "Star de do aur batao kya kami hai?" Feedback se repo behtar hota hai, aur har star naye logon ko dikhata hai. Fake stars ya bots — kabhi nahi, GitHub pakar leta hai.</p></div>
+      <div class="card"><span class="tag gold">Tumhara plan</span><h3>Do repo, ek loop</h3><p><b>Repo 1:</b> ye Resume Builder (HTML file GitHub par). <b>Repo 2:</b> coding-seekho-roman-urdu (har lesson ek file). Reel resume builder ki banao, description me dono repos ke links — traffic ek doosre ko milega.</p></div>
+    </div>
+    <div class="note"><b>Ek zaroori baat:</b> Stars waqt lete hain — pehle hafte me 5 star bhi mil jayein to wo jeet hai. Asli jeet wo skill hai jo tum seekh jaoge; stars uske peeche khud aate hain.</div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">Resume Builder — students ke liye free toolkit. Details sirf tumhare browser me rehti hain; page band karne par kuch save nahi hota. Apni real maloomat hamesha sach likho — jhooti degree ya experience interview me pakri jati hai.</div>
+</footer>
+
+<div class="toast" id="toast" role="status"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+(function(){
+  "use strict";
+  var $ = function(id){ return document.getElementById(id); };
+  var esc = function(s){ return String(s==null?"":s).replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];}); };
+  var toastTimer=null;
+  function toast(msg){
+    var t=$("toast"); t.textContent=msg; t.classList.add("show");
+    clearTimeout(toastTimer); toastTimer=setTimeout(function(){t.classList.remove("show");},2600);
+  }
+  function copyText(text,msg){
+    function done(){ toast(msg||"Copy ho gaya!"); }
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text).then(done).catch(function(){ fallback(); });
+    } else fallback();
+    function fallback(){
+      var ta=document.createElement("textarea"); ta.value=text; ta.style.position="fixed"; ta.style.opacity="0";
+      document.body.appendChild(ta); ta.select();
+      try{ document.execCommand("copy"); done(); }catch(e){ toast("Copy nahi hua — text select karke khud copy karo"); }
+      document.body.removeChild(ta);
+    }
+  }
+
+  /* ---------- tabs ---------- */
+  var tabs=document.querySelectorAll(".tab");
+  tabs.forEach(function(tab){
+    tab.addEventListener("click",function(){
+      tabs.forEach(function(x){x.setAttribute("aria-selected","false");});
+      tab.setAttribute("aria-selected","true");
+      document.querySelectorAll(".panel").forEach(function(p){p.classList.remove("active");});
+      $("panel-"+tab.getAttribute("data-tab")).classList.add("active");
+      window.scrollTo({top:0,behavior:"smooth"});
+    });
+  });
+
+  /* ---------- resume builder ---------- */
+  var eduData=[
+    {a:"Intermediate (12th)",b:"Govt Degree College, Karachi",c:"Completed"},
+    {a:"DIT — Diploma in Information Technology",b:"Computer institute",c:"In progress"}
+  ];
+  var expData=[{a:"",b:"",c:""}];
+  var eduWrap=$("eduEntries"), expWrap=$("expEntries");
+
+  function makeEntry(wrap,data,i,kind){
+    var d=document.createElement("div"); d.className="entry";
+    var ph = kind==="edu"
+      ? ['Degree (masalan: Matric, Intermediate, DIT)','College / School ka naam','Saal ya status (masalan: 2024, In progress)']
+      : ['Job / Kaam (masalan: Shop Assistant)','Jagah / Company','Kya kiya — ek line me'];
+    d.innerHTML='<div class="row"><input data-k="a" placeholder="'+ph[0]+'" value="'+esc(data.a)+'">'+
+      '<button type="button" class="icon-btn" title="Hatao" aria-label="Entry hatao">&times;</button></div>'+
+      '<div class="sub"><input data-k="b" placeholder="'+ph[1]+'" value="'+esc(data.b)+'"></div>'+
+      '<div class="sub"><input data-k="c" placeholder="'+ph[2]+'" value="'+esc(data.c)+'"></div>';
+    d.querySelectorAll("input").forEach(function(inp){
+      inp.addEventListener("input",function(){ data[inp.getAttribute("data-k")]=inp.value; render(); });
+    });
+    d.querySelector(".icon-btn").addEventListener("click",function(){
+      if(kind==="edu"){ eduData.splice(i,1); if(!eduData.length) eduData.push({a:"",b:"",c:""}); buildEntries(); }
+      else { expData.splice(i,1); if(!expData.length) expData.push({a:"",b:"",c:""}); buildEntries(); }
+      render();
+    });
+    wrap.appendChild(d);
+  }
+  function buildEntries(){
+    eduWrap.innerHTML=""; expWrap.innerHTML="";
+    eduData.forEach(function(e,i){ makeEntry(eduWrap,e,i,"edu"); });
+    expData.forEach(function(e,i){ makeEntry(expWrap,e,i,"exp"); });
+  }
+  $("addEdu").addEventListener("click",function(){ eduData.push({a:"",b:"",c:""}); buildEntries(); render(); });
+  $("addExp").addEventListener("click",function(){ expData.push({a:"",b:"",c:""}); buildEntries(); render(); });
+
+  var currentTpl="t-modern", currentColor="#0e7a5f";
+  document.querySelectorAll(".tpl").forEach(function(b){
+    b.addEventListener("click",function(){
+      document.querySelectorAll(".tpl").forEach(function(x){x.setAttribute("aria-pressed","false");});
+      b.setAttribute("aria-pressed","true"); currentTpl=b.getAttribute("data-tpl"); render();
+    });
+  });
+  document.querySelectorAll(".swatch").forEach(function(b){
+    b.addEventListener("click",function(){
+      document.querySelectorAll(".swatch").forEach(function(x){x.setAttribute("aria-pressed","false");});
+      b.setAttribute("aria-pressed","true"); currentColor=b.getAttribute("data-color"); render();
+    });
+  });
+
+  function vals(){
+    return {
+      name:$("f-name").value.trim(), title:$("f-title").value.trim(),
+      phone:$("f-phone").value.trim(), city:$("f-city").value.trim(),
+      email:$("f-email").value.trim(), summary:$("f-summary").value.trim(),
+      skills:$("f-skills").value.split(",").map(function(s){return s.trim();}).filter(Boolean),
+      langs:$("f-langs").value.split(",").map(function(s){return s.trim();}).filter(Boolean),
+      edu:eduData.filter(function(e){return e.a||e.b||e.c;}),
+      exp:expData.filter(function(e){return e.a||e.b||e.c;})
+    };
+  }
+  function itemsHtml(list,withDesc){
+    return list.map(function(e){
+      var right = withDesc ? "" : (e.c?'<span class="r-when">'+esc(e.c)+"</span>":"");
+      return '<div style="margin-bottom:9px"><div class="r-item-head"><b>'+esc(e.a||"—")+"</b>"+right+"</div>"+
+        (e.b?'<div class="r-sub">'+esc(e.b)+"</div>":"")+
+        (withDesc&&e.c?"<p>"+esc(e.c)+"</p>":"")+"</div>";
+    }).join("");
+  }
+  function render(){
+    var v=vals(), sheet=$("resumeSheet");
+    sheet.className="resume "+currentTpl;
+    sheet.style.setProperty("--ra",currentColor);
+    var contact=[v.phone,v.email,v.city].filter(Boolean).map(esc).join(" &nbsp;·&nbsp; ");
+    var contactSide=[v.phone,v.email,v.city].filter(Boolean).map(function(x){return "<p>"+esc(x)+"</p>";}).join("");
+    var summaryHtml = v.summary?'<h4>Profile</h4><p>'+esc(v.summary)+"</p>":"";
+    var skillsHtml = v.skills.length?'<h4>Skills</h4><div class="skill-chips">'+v.skills.map(function(s){return "<span>"+esc(s)+"</span>";}).join("")+"</div>":"";
+    var langsHtml = v.langs.length?'<h4>Languages</h4><p>'+v.langs.map(esc).join(", ")+"</p>":"";
+    var eduHtml = v.edu.length?'<h4>Education</h4>'+itemsHtml(v.edu,false):"";
+    var expHtml = v.exp.length?'<h4>Experience</h4>'+itemsHtml(v.exp,true):"";
+    if(currentTpl==="t-bold"){
+      sheet.innerHTML=
+        '<div class="r-side"><div class="r-contact">'+contactSide+"</div>"+skillsHtml+langsHtml+"</div>"+
+        '<div class="r-main"><div class="r-name">'+esc(v.name||"Tumhara Naam")+'</div>'+
+        '<div class="r-title">'+esc(v.title)+"</div>"+summaryHtml+expHtml+eduHtml+"</div>";
+    } else {
+      sheet.innerHTML=
+        '<div class="r-head"><div class="r-name">'+esc(v.name||"Tumhara Naam")+'</div>'+
+        '<div class="r-title">'+esc(v.title)+'</div><div class="r-contact">'+contact+"</div></div>"+
+        summaryHtml+expHtml+eduHtml+skillsHtml+langsHtml;
+    }
+    renderAts(v);
+  }
+  function renderAts(v){
+    var checks=[
+      {ok:!!v.name, good:"Naam likha hai", bad:"Naam missing hai — sab se pehle naam likho"},
+      {ok:/@/.test(v.email)&&/\./.test(v.email), good:"Sahi email mojood hai", bad:"Email missing ya ghalat lag raha hai"},
+      {ok:v.phone.replace(/\D/g,"").length>=10, good:"Phone number theek hai", bad:"Poora phone number likho (kam az kam 10 digits)"},
+      {ok:v.summary.length>=60, good:"Intro ka size theek hai", bad:"Intro thora lamba likho — 2–3 lines (abhi "+v.summary.length+" characters)"},
+      {ok:v.skills.length>=4, good:v.skills.length+" skills likhi hain", bad:"Kam az kam 4 skills likho (abhi "+v.skills.length+")"},
+      {ok:v.edu.length>=1, good:"Education add hai", bad:"Education lazmi add karo"},
+      {ok:v.langs.length>=2, good:v.langs.length+" zubaanain — ye tumhari taqat hai", bad:"Zubaanain likho — zyada zubaanain = zyada chance"},
+      {ok:v.exp.length>=1, good:"Experience add hai", bad:"Experience khaali hai — internship, ghar ka business, kuch bhi real likho"}
+    ];
+    var score=Math.round(checks.filter(function(c){return c.ok;}).length/checks.length*100);
+    $("atsScore").textContent=score+"/100";
+    $("atsList").innerHTML=checks.map(function(c){
+      return '<li class="'+(c.ok?"ok":"bad")+'"><span class="mark">'+(c.ok?"✓":"!")+"</span><span>"+esc(c.ok?c.good:c.bad)+"</span></li>";
+    }).join("");
+  }
+  ["f-name","f-title","f-phone","f-city","f-email","f-summary","f-skills","f-langs"].forEach(function(id){
+    $(id).addEventListener("input",render);
+  });
+  buildEntries(); render();
+
+  /* ---------- exports ---------- */
+  function sheetCanvas(){
+    if(typeof html2canvas==="undefined"){ toast("Photo library load nahi hui — internet check karke dobara try karo"); return Promise.resolve(null); }
+    return html2canvas($("resumeSheet"),{scale:2,backgroundColor:"#ffffff",useCORS:true});
+  }
+  $("dlPng").addEventListener("click",function(){
+    toast("Photo ban raha hai…");
+    sheetCanvas().then(function(canvas){
+      if(!canvas) return;
+      var a=document.createElement("a");
+      a.download=(vals().name||"resume").replace(/\s+/g,"-")+"-resume.png";
+      a.href=canvas.toDataURL("image/png"); a.click();
+      toast("Resume ki photo download ho gayi!");
+    }).catch(function(){ toast("Photo nahi bana — dobara try karo"); });
+  });
+  $("dlPdf").addEventListener("click",function(){
+    toast("PDF ban raha hai…");
+    sheetCanvas().then(function(canvas){
+      if(!canvas) return;
+      if(!window.jspdf){ toast("PDF library load nahi hui — Photo (PNG) wala button use karo"); return; }
+      var pdf=new window.jspdf.jsPDF({unit:"mm",format:"a4"});
+      var pw=210, ph=297, ih=canvas.height*pw/canvas.width;
+      var img=canvas.toDataURL("image/jpeg",0.95);
+      if(ih<=ph){ pdf.addImage(img,"JPEG",0,0,pw,ih); }
+      else{
+        var left=ih, pos=0;
+        pdf.addImage(img,"JPEG",0,pos,pw,ih); left-=ph;
+        while(left>0){ pos-=ph; pdf.addPage(); pdf.addImage(img,"JPEG",0,pos,pw,ih); left-=ph; }
+      }
+      pdf.save((vals().name||"resume").replace(/\s+/g,"-")+"-resume.pdf");
+      toast("PDF download ho gaya!");
+    }).catch(function(){ toast("PDF nahi bana — Photo (PNG) try karo"); });
+  });
+
+  /* ---------- cover letter + WhatsApp ---------- */
+  var coverText="", waText="";
+  $("genCover").addEventListener("click",function(){
+    var v=vals(), co=$("cl-company").value.trim()||"your company";
+    coverText=
+      "Dear Hiring Manager,\n\n"+
+      "I am writing to apply for a position at "+co+". My name is "+(v.name||"—")+", and I am based in "+(v.city||"Pakistan")+". "+
+      (v.edu.length? "My education includes "+v.edu.map(function(e){return e.a;}).filter(Boolean).join(", ")+". ":"")+
+      "\n\nMy key skills include "+(v.skills.slice(0,5).join(", ")||"—")+". "+
+      (v.langs.length? "I can communicate with customers in "+v.langs.join(", ")+", which helps in serving a wide range of clients. ":"")+
+      "\n\n"+(v.summary||"")+
+      "\n\nI would welcome the chance to discuss how I can contribute to your team. You can reach me at "+(v.phone||"—")+" or "+(v.email||"—")+".\n\n"+
+      "Thank you for your time and consideration.\n\nSincerely,\n"+(v.name||"—");
+    var out=$("coverOut");
+    out.innerHTML='<div class="ob-title">Cover Letter — '+esc(co)+"</div>"+esc(coverText).replace(/\n/g,"<br>");
+    out.classList.add("show"); $("copyCover").style.display="";
+  });
+  $("copyCover").addEventListener("click",function(){ if(coverText) copyText(coverText,"Cover letter copy ho gaya!"); });
+  $("genWa").addEventListener("click",function(){
+    var v=vals();
+    waText="Assalam-o-Alaikum, my name is "+(v.name||"—")+" from "+(v.city||"Pakistan")+". "+
+      (v.edu.length? "I have completed "+v.edu.map(function(e){return e.a;}).filter(Boolean).join(", ")+". ":"")+
+      (v.langs.length? "I speak "+v.langs.join(", ")+". ":"")+
+      "I am interested in helping with online orders, WhatsApp customer replies, and product listings for your shop. I have attached my resume (PDF). Please let me know if you have any opening or trial work. Thank you. — "+(v.name||"")+", "+(v.email||"");
+    var out=$("waOut"); out.textContent=waText; out.classList.add("show"); $("copyWa").style.display="";
+  });
+  $("copyWa").addEventListener("click",function(){ if(waText) copyText(waText,"WhatsApp message copy ho gaya!"); });
+
+  /* ---------- lessons ---------- */
+  var lessons=[
+    {t:"Lesson 1 — HTML kya hai?",u:"HTML har website ki haddi (structure) hai. Jaise ghar ka dhancha pehle banta hai, phir rang hota hai — website me pehle HTML, phir CSS se rang. Har cheez &lt;tag&gt; me likhi jati hai.",
+     code:'<h1>Assalam-o-Alaikum!</h1>\n<p>Ye meri pehli website hai.</p>\n<button>Click karo</button>',
+     note:"Right side box me code badlo — masalan apna naam likho — result foran badal jayega."},
+    {t:"Lesson 2 — Headings aur Paragraph",u:"&lt;h1&gt; sab se bari heading, &lt;h6&gt; sab se chhoti. &lt;p&gt; matlab paragraph. Google bhi pehle &lt;h1&gt; parhta hai, is liye har page par ek hi &lt;h1&gt; rakho.",
+     code:'<h1>Meri Dukaan</h1>\n<h2>Kapre</h2>\n<p>Best quality, sahi daam.</p>\n<h2>Jootay</h2>\n<p>Har size available hai.</p>',
+     note:"Heading ka size badal kar dekho: h1 ki jagah h3 likho."},
+    {t:"Lesson 3 — Links aur Photos",u:"&lt;a&gt; se link banta hai (href me address), &lt;img&gt; se photo lagti hai (src me photo ka address). Dono khud band hone wale tags ki tarah kaam karte hain.",
+     code:'<a href="https://github.com">GitHub par jao</a>\n<br><br>\n<img src="https://picsum.photos/260/120" alt="Example photo">',
+     note:"Link par click karke dekho. Photo ka address badalna seekho — yehi kaam resume sites par hota hai."},
+    {t:"Lesson 4 — Lists",u:"&lt;ul&gt; dot wali list, &lt;ol&gt; number wali list, aur har cheez &lt;li&gt; me. Menu, features, steps — har jagah lists use hoti hain.",
+     code:'<h3>Meray Skills</h3>\n<ul>\n  <li>HTML</li>\n  <li>CSS</li>\n  <li>Mehnat</li>\n</ul>',
+     note:"Apne skills likho aur ek aur &lt;li&gt; add karo."},
+    {t:"Lesson 5 — CSS: Rang aur Design",u:"CSS HTML ko khoobsurat banata hai. &lt;style&gt; ke andar likhte hain: kis cheez ka, konsa rang, kitna size. Bina CSS website aisi hai jaise bina paint ke ghar.",
+     code:'<style>\n  h1 { color: crimson; text-align: center; }\n  p { background: gold; padding: 10px; border-radius: 8px; }\n</style>\n<h1>Tanveen ki Site</h1>\n<p>Rang badalna kitna asaan hai!</p>',
+     note:"crimson ki jagah blue, green, teal likh kar dekho."},
+    {t:"Lesson 6 — CSS Box Model",u:"Har cheez ek box hai: andar ki jagah = padding, bahar ki jagah = margin, kinara = border. Ye samajh lo to har design ban jayega.",
+     code:'<style>\n  .box { background: teal; color: white; padding: 20px; margin: 10px; border-radius: 14px; }\n</style>\n<div class="box">Main ek box hoon!</div>\n<div class="box">Main doosra box hoon.</div>',
+     note:"padding 20px ki jagah 40px likho — box phool jayega."},
+    {t:"Lesson 7 — JavaScript: Click par jaadu",u:"JavaScript website ko zinda karta hai. Button dabane par kuch ho — yehi interactivity hai. onclick matlab: click ho to ye kaam karo.",
+     code:'<button onclick="document.getElementById(\'msg\').innerText = \'Tum ne kar dikhaya!\'">Mujhe dabao</button>\n<p id="msg">Abhi kuch nahi hua…</p>',
+     note:"Apna message likh kar button dabao — page khud badal jayega, refresh ki zaroorat nahi."},
+    {t:"Lesson 8 — Python: pehla program",u:"Python sab se asaan mashhoor language hai — animations (jaise lily flower wali) aur AI isy se bante hain. Ye code browser me nahi chalta, lekin samajhna zaroori hai:",
+     code:'naam = "Tanveen"\nprint("Assalam-o-Alaikum, " + naam)\n\nfor i in range(1, 6):\n    print("Day", i, "— coding seekh raha hoon!")',
+     note:"print() screen par likhta hai. range(1,6) matlab 1 se 5 tak ginna. Python seekhne ke liye phone par 'Pydroid' app free hai.",py:true}
+  ];
+  var lessonsWrap=$("lessons");
+  lessons.forEach(function(L,idx){
+    var div=document.createElement("div"); div.className="lesson";
+    var right = L.py
+      ? '<div class="try-box"><div class="tb-head">Samajh lo</div><p style="margin:0;font-size:14px;color:var(--ink-soft)">'+esc(L.note)+'</p></div>'
+      : '<div class="try-box"><div class="tb-head">Try karo — code badlo, result dekho</div>'+
+        '<textarea class="try-code mono" style="width:100%;min-height:118px;border:1px solid var(--line);border-radius:8px;background:var(--bg);padding:10px;font-size:12.5px;margin-bottom:9px">'+esc(L.code)+'</textarea>'+
+        '<iframe class="try-frame" title="Lesson '+(idx+1)+' live try box" sandbox="allow-scripts"></iframe></div>';
+    div.innerHTML="<h3>"+esc(L.t)+'</h3><p class="urdu">'+L.u+'</p><div class="lesson-grid">'+
+      '<div><pre class="code">'+esc(L.code)+'</pre>'+
+      (L.py?"":'<p style="font-size:13.5px;color:var(--ink-soft);margin:8px 0 0">'+esc(L.note)+"</p>")+"</div>"+right+"</div>";
+    lessonsWrap.appendChild(div);
+    if(!L.py){
+      var ta=div.querySelector(".try-code"), fr=div.querySelector(".try-frame");
+      var run=function(){ fr.srcdoc=ta.value; };
+      ta.addEventListener("input",run); run();
+    }
+  });
+
+  /* ---------- quiz ---------- */
+  var quiz=[
+    {q:"HTML me sab se bari heading konsi hoti hai?",opts:["<p>","<h1>","<head>","<big>"],a:1,why:"<h1> sab se bari heading hai — har page par aam tor par ek hi hoti hai."},
+    {q:"Website ka rang aur design kis se badalta hai?",opts:["HTML","Python","CSS","GitHub"],a:2,why:"CSS (Cascading Style Sheets) design ke liye hai — rang, size, jagah sab isy se."},
+    {q:"Link banane wala tag konsa hai?",opts:['<a href="...">','<linkme>','<url>','<go>'],a:0,why:'<a> tag href ke saath link banata hai: <a href="https://example.com">Click</a>'},
+    {q:"JavaScript kis kaam aata hai?",opts:["Sirf photo lagane","Website ko interactive banane — click par kaam","Sirf rang badalne","Internet chalane"],a:1,why:"JavaScript se buttons kaam karte hain, games banti hain, pages zinda hote hain."},
+    {q:"GitHub kya hai?",opts:["Ek game","Code rakhne aur share karne ki website","Ek photo app","Ek browser"],a:1,why:"GitHub par duniya bhar ke developers apna code rakhte aur share karte hain — bilkul free."},
+    {q:"Python me screen par likhne ke liye kya use hota hai?",opts:["show()","likho()","print()","display()"],a:2,why:"print() Python ka sab se pehla dost hai: print(\"Hello\") likho, jawab screen par."}
+  ];
+  var qi=0,qScore=0,qDone=false;
+  function renderQuiz(){
+    var box=$("quizBox"), prog=$("quizProgress");
+    if(qi>=quiz.length){
+      prog.textContent="Quiz mukammal!";
+      box.innerHTML="<h3>Tumhara score: "+qScore+" / "+quiz.length+"</h3>"+
+        "<p style='color:var(--ink-soft)'>"+(qScore===quiz.length?"Zabardast! Tum ready ho — ab GitHub repo bana kar ye sawal wahan daal do, log bhi seekhenge.":qScore>=4?"Bohat acha! Thori practice aur, phir lessons dobara parho.":"Acha start hai! Upar ke lessons dobara parho aur phir try karo — seekhna aise hi hota hai.")+"</p>"+
+        '<div class="btn-row"><button class="btn small" id="quizRestart" type="button">Dobara try karo</button></div>';
+      $("quizRestart").addEventListener("click",function(){ qi=0;qScore=0; renderQuiz(); });
+      return;
+    }
+    var Q=quiz[qi]; qDone=false;
+    prog.textContent="Sawal "+(qi+1)+" / "+quiz.length+"  ·  Score: "+qScore;
+    box.innerHTML="<h3>"+esc(Q.q)+'</h3><div class="quiz-opts">'+
+      Q.opts.map(function(o,i){ return '<button type="button" class="quiz-opt" data-i="'+i+'">'+esc(o)+"</button>"; }).join("")+
+      '</div><p class="quiz-explain" id="qExp"></p><div class="btn-row"><button class="btn small" id="qNext" type="button" style="display:none">Agla sawal</button></div>';
+    box.querySelectorAll(".quiz-opt").forEach(function(btn){
+      btn.addEventListener("click",function(){
+        if(qDone) return; qDone=true;
+        var pick=parseInt(btn.getAttribute("data-i"),10);
+        box.querySelectorAll(".quiz-opt").forEach(function(b){
+          b.disabled=true;
+          if(parseInt(b.getAttribute("data-i"),10)===Q.a) b.classList.add("correct");
+        });
+        if(pick===Q.a){ qScore++; } else { btn.classList.add("wrong"); }
+        var ex=$("qExp"); ex.textContent=Q.why; ex.classList.add("show");
+        $("qNext").style.display="";
+        prog.textContent="Sawal "+(qi+1)+" / "+quiz.length+"  ·  Score: "+qScore;
+      });
+    });
+    $("qNext").addEventListener("click",function(){ qi++; renderQuiz(); });
+  }
+  renderQuiz();
+
+  /* ---------- tools ---------- */
+  function fmtRs(n){ return "Rs "+Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g,","); }
+  function calc(){
+    var rate=parseInt($("calc-skill").value,10), hrs=parseInt($("calc-hours").value,10);
+    $("calc-hours-label").textContent=hrs;
+    var monthly=rate*hrs*4;
+    $("calcOut").textContent="Hafte ke "+hrs+" ghante × "+fmtRs(rate)+"/hour\nMahina andazan: "+fmtRs(monthly)+" – "+fmtRs(monthly*1.5)+"\n\nShuruaat me kam rate milta hai; kaam acha ho to clients khud rate barhate hain. Pehla client sab se mushkil hota hai — us ke baad asaan.";
+  }
+  $("calc-skill").addEventListener("change",calc);
+  $("calc-hours").addEventListener("input",calc);
+  calc();
+
+  $("genUser").addEventListener("click",function(){
+    var w=($("un-word").value.trim()||"tanveen").toLowerCase().replace(/[^a-z0-9]/g,"");
+    if(!w) w="creator";
+    var ideas=[w+".creates",w+"_official","the.real."+w,w+"codes","seekho.with."+w,w+".tech",w+"builds","its"+w+"pk",w+".daily",w+"writes.code"];
+    var out=$("userOut");
+    out.innerHTML=ideas.map(function(x){return "• "+esc(x);}).join("<br>");
+    out.classList.add("show");
+  });
+
+  var urduMap={"ا":"a","آ":"aa","ب":"b","پ":"p","ت":"t","ٹ":"t","ث":"s","ج":"j","چ":"ch","ح":"h","خ":"kh","د":"d","ڈ":"d","ذ":"z","ر":"r","ڑ":"r","ز":"z","ژ":"zh","س":"s","ش":"sh","ص":"s","ض":"z","ط":"t","ظ":"z","ع":"a","غ":"gh","ف":"f","ق":"q","ک":"k","گ":"g","ل":"l","م":"m","ن":"n","ں":"n","و":"o","ہ":"h","ھ":"h","ء":"","ی":"i","ے":"e","ئ":"i","َ":"a","ِ":"i","ُ":"u","ْ":"","ٰ":"a","ّ":""};
+  var wordFix={"میرا":"mera","نام":"naam","ہے":"hai","میں":"main","اور":"aur","کا":"ka","کی":"ki","کے":"ke","سے":"se","پر":"par","نہیں":"nahi","بھی":"bhi","یہ":"ye","وہ":"wo","کیا":"kya","تم":"tum","آپ":"aap","ہم":"hum","ایک":"ek","ہوں":"hoon","ہیں":"hain","کو":"ko","نے":"ne","تھا":"tha","گا":"ga","گی":"gi","رہا":"raha","رہی":"rahi","بہت":"bohat","اچھا":"acha","شکریہ":"shukriya","اللہ":"Allah","پاکستان":"Pakistan"};
+  $("convUrdu").addEventListener("click",function(){
+    var raw=$("tu-input").value;
+    if(!raw.trim()){ toast("Pehle Urdu text likho"); return; }
+    var words=raw.split(/\s+/).map(function(w){
+      var clean=w.replace(/[۔،؟!«»"']/g,"");
+      if(wordFix[clean]) return wordFix[clean];
+      var out=""; for(var i=0;i<clean.length;i++){ var ch=clean[i]; out+=(urduMap[ch]!==undefined?urduMap[ch]:ch); }
+      return out;
+    });
+    var res=words.join(" ");
+    var out=$("urduOut"); out.textContent=res; out.classList.add("show");
+    $("copyUrdu").style.display="";
+    $("copyUrdu").onclick=function(){ copyText(res,"Roman Urdu copy ho gaya!"); };
+  });
+
+  document.querySelectorAll(".copy-pre").forEach(function(btn){
+    btn.addEventListener("click",function(){
+      var pre=btn.closest(".card").querySelector("pre.code");
+      if(pre) copyText(pre.textContent,"Cheat sheet copy ho gayi!");
+    });
+  });
+})();
+</script>
+</body>
+</html>
